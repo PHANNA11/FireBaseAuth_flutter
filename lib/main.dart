@@ -1,11 +1,12 @@
-import 'package:firebase6_7/second_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase6_7/fireStore/view/second_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-void main() async {
+Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+
   runApp(const MyApp());
 }
 
@@ -19,9 +20,36 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: initFireBase,
     );
   }
+}
+
+get initFireBase {
+  return FutureBuilder(
+    future: Firebase.initializeApp(),
+    builder: (context, snapshot) {
+      if (snapshot.hasError) {
+        return const Scaffold(
+          body: Center(
+            child: Icon(
+              Icons.info,
+              size: 30,
+              color: Colors.red,
+            ),
+          ),
+        );
+      }
+      if (snapshot.connectionState == ConnectionState.done) {
+        return const MyHomePage(
+          title: 'HomePage',
+        );
+      }
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    },
+  );
 }
 
 class MyHomePage extends StatefulWidget {
@@ -73,11 +101,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   var status = await signInAccount(emailController.text.trim(),
                       passwordController.text.trim());
                   if (status == '200') {
-                    Navigator.push(
+                    // ignore: use_build_context_synchronously
+                    Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const SecondScreen(),
-                        ));
+                          builder: (context) => const homeScreen(),
+                        ),
+                        (route) => false);
                   } else {
                     print(status);
                   }
