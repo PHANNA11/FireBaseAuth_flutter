@@ -31,6 +31,16 @@ class _homeScreenState extends State<homeScreen> {
         .then((value) => value.docs.forEach((element) {
               print('DocID=${element.reference.id}');
               docIds.add(element.reference.id);
+              FirebaseFirestore.instance
+                  .collection('student')
+                  .doc(element.id)
+                  .collection('address')
+                  .get()
+                  .then((subvalue) {
+                subvalue.docs.forEach((subelement) {
+                  print('vallage:${subelement.reference}');
+                });
+              });
             }));
   }
 

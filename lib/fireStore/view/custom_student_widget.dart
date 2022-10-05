@@ -23,10 +23,15 @@ class StudentWidget extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.done) {
           Map<String, dynamic> data =
               snapshot.data!.data() as Map<String, dynamic>;
-          return Card(
-            color: Color.fromARGB(255, 241, 215, 213),
-            child: ListTile(
-              title: Text(data['name'].toString()),
+          return InkWell(
+            onLongPress: () async {
+              await stu.doc(documentId).delete();
+            },
+            child: Card(
+              color: Color.fromARGB(255, 241, 215, 213),
+              child: ListTile(
+                title: Text(data['name'].toString()),
+              ),
             ),
           );
         }
